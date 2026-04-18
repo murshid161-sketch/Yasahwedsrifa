@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Yasah & Rifa — RSVP Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--brown:#6b4c3b;--gold:#b8956a;--cream:#f7f2eb;--bg:#f2ede4;--text:#1a1a1a;--muted:#888;--card:#fff;--border:#e8e0d0;}
+body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
+#loginScreen{position:fixed;inset:0;z-index:999;background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.login-box{background:var(--cream);border-radius:12px;padding:2.5rem 2rem;width:100%;max-width:340px;text-align:center;}
+.login-logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin-bottom:.2rem;}
+.login-sub{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;color:var(--gold);margin-bottom:2rem;}
+.login-box input{width:100%;padding:.8rem 1rem;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:.12em;margin-bottom:.75rem;background:#fafaf8;color:var(--text);}
+.login-box button{width:100%;padding:.9rem;background:var(--brown);color:#fff;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.18em;border:none;cursor:pointer;border-radius:8px;}
+.login-err{color:#a32d2d;font-size:.85rem;margin-top:.5rem;display:none;font-style:italic;}
+header{background:#1a1a1a;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-right:.6rem;display:inline-block;vertical-align:middle;}
+.couple-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:#fff;vertical-align:middle;}
+.dash-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;color:var(--gold);margin-top:.2rem;}
+.logout-btn{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.3);padding:.45rem 1rem;cursor:pointer;border-radius:6px;}
+.content{padding:1.25rem;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem;}
+.stat-card{background:var(--card);border-radius:12px;padding:1.1rem 1rem;}
+.stat-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.15em;color:var(--muted);margin-bottom:.5rem;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:500;color:var(--text);line-height:1;}
+.stat-sub{font-size:.85rem;color:var(--muted);margin-left:.2rem;font-family:'Cormorant Garamond',serif;}
+.invite-card{background:var(--card);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;}
+.invite-card h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.4rem;color:var(--text);margin-bottom:.3rem;}
+.invite-card p{font-size:.9rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;}
+.invite-card input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);background:#fafaf8;margin-bottom:.75rem;}
+.link-box{background:#fafaf8;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-size:.78rem;color:var(--muted);word-break:break-all;margin-bottom:.75rem;font-family:monospace;min-height:44px;line-height:1.5;}
+.invite-btns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.btn-dark{padding:.8rem;background:var(--brown);color:#fff;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;border:none;cursor:pointer;border-radius:8px;}
+.btn-wa{padding:.8rem;background:#25d366;color:#fff;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;border:none;cursor:pointer;border-radius:8px;}
+.filter-title{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18em;color:var(--muted);margin-bottom:.75rem;}
+.filter-note{font-style:italic;text-transform:none;letter-spacing:0;font-family:'Cormorant Garamond',serif;font-size:.75rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;}
+.chip{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.08em;padding:.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.chip.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.search-row{display:flex;gap:.6rem;margin-bottom:1rem;}
+.search-input{flex:1;padding:.65rem 1rem;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);background:var(--card);}
+.filter-select{padding:.65rem .8rem;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:.9rem;color:var(--text);background:var(--card);appearance:none;padding-right:2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M5 7L0 0h10z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;}
+.guest-card{background:var(--card);border-radius:12px;padding:1.25rem;margin-bottom:.75rem;}
+.guest-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;}
+.guest-name-text{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:500;color:var(--text);}
+.badge{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.1em;padding:.3rem .7rem;border-radius:20px;}
+.badge.yes{background:#e8f5ec;color:#2d6a4f;}
+.badge.no{background:#fce8e8;color:#a32d2d;}
+.guest-meta{font-size:.88rem;color:var(--muted);margin-bottom:.5rem;}
+.guest-meta strong{color:var(--text);}
+.event-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem;}
+.event-tag{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.08em;padding:.3rem .7rem;border-radius:6px;border:1px solid rgba(184,149,106,.3);background:rgba(184,149,106,.08);color:var(--brown);}
+.reply-time{font-size:.78rem;color:var(--muted);font-style:italic;}
+.guest-msg-text{font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;z-index:50;}
+.showing-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;color:var(--gold);}
+.export-btn{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;padding:.6rem 1.3rem;background:var(--gold);color:#fff;border:none;cursor:pointer;border-radius:6px;}
+.empty-state,.loading-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-style:italic;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Yasah & Rifa</div>
+    <div class="login-sub">RSVP DASHBOARD</div>
+    <input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <button onclick="checkPw()">ENTER</button>
+    <div class="login-err" id="loginErr">Incorrect password</div>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none;">
+  <header>
+    <div>
+      <div><span class="header-dot"></span><span class="couple-name">Yasah & Rifa</span></div>
+      <div class="dash-label">RSVP DASHBOARD</div>
+    </div>
+    <button class="logout-btn" onclick="logout()">LOG OUT</button>
+  </header>
+
+  <div class="content">
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">TOTAL RSVPS</div><div class="stat-num" id="statTotal">—</div></div>
+      <div class="stat-card"><div class="stat-label">ATTENDING</div><div class="stat-num" id="statAttending">—</div></div>
+      <div class="stat-card"><div class="stat-label">NOT ATTENDING</div><div class="stat-num" id="statDeclined">—</div></div>
+      <div class="stat-card"><div class="stat-label">TOTAL MEMBERS</div><div class="stat-num" id="statMembers">—</div></div>
+    </div>
+
+    <div class="invite-card">
+      <h3>Create personalised invitation</h3>
+      <p>Enter a guest's name to generate a link with their name pre-filled.</p>
+      <input type="text" id="guestNameInput" placeholder="e.g., Ahmed Rashid" oninput="updateInviteLink()"/>
+      <div class="link-box" id="linkBox">https://your-site.netlify.app/</div>
+      <div class="invite-btns">
+        <button class="btn-dark" onclick="copyLink()">COPY LINK</button>
+        <button class="btn-wa" onclick="shareWA()">SHARE ON WHATSAPP</button>
+      </div>
+    </div>
+
+    <div class="filter-title">FILTER BY EVENT <span class="filter-note">(numbers = total guests attending)</span></div>
+    <div class="chips">
+      <div class="chip active" onclick="setChip(this,'all')">All <span id="chipAll">0</span></div>
+      <div class="chip" onclick="setChip(this,'reception')">Reception <span id="chipReception">0</span></div>
+    </div>
+    <div class="search-row">
+      <input class="search-input" type="text" id="searchInput" placeholder="Search by name..." oninput="renderGuests()"/>
+      <select class="filter-select" id="attendFilter" onchange="renderGuests()">
+        <option value="all">All replies</option>
+        <option value="yes">Attending</option>
+        <option value="no">Not attending</option>
+      </select>
+    </div>
+
+    <div id="guestList"><div class="loading-state">Loading guest data...</div></div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="showing-label" id="showingLabel">SHOWING 0 OF 0</div>
+    <button class="export-btn" onclick="exportCSV()">↓ EXPORT CSV</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const PW='digiwed2026';
+const BASE_URL='https://your-site.netlify.app/';
+const FIREBASE_CONFIG={apiKey:"AIzaSyB41fvxvl1KeHOro6WKJ72o22izuCpJ-b4",authDomain:"yaseen-jumana-wedding.firebaseapp.com",databaseURL:"https://yaseen-jumana-wedding-default-rtdb.firebaseio.com",projectId:"yaseen-jumana-wedding",storageBucket:"yaseen-jumana-wedding.firebasestorage.app",messagingSenderId:"355557621111",appId:"1:355557621111:web:d0b78c34bfe5a53b69f572"};
+const RSVP_PATH='yasah-rifa/rsvp';
+let db=null,allGuests=[],currentFilter='all';
+
+function checkPw(){
+  if(document.getElementById('pwInput').value===PW){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    initFirebase();
+  }else{document.getElementById('loginErr').style.display='block';}
+}
+function logout(){document.getElementById('dashboard').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('pwInput').value='';}
+
+function initFirebase(){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.database();
+    db.ref(RSVP_PATH).on('value',snap=>{
+      allGuests=[];
+      snap.forEach(c=>allGuests.push({key:c.key,...c.val()}));
+      allGuests.sort((a,b)=>b.ts-a.ts);
+      updateStats();renderGuests();
+    });
+  }catch(e){document.getElementById('guestList').innerHTML='<div class="loading-state">Firebase error: '+e.message+'</div>';}
+}
+
+function updateStats(){
+  const att=allGuests.filter(g=>g.attending==='yes');
+  const dec=allGuests.filter(g=>g.attending==='no');
+  const mem=att.reduce((s,g)=>s+(parseInt(g.members)||1),0);
+  document.getElementById('statTotal').textContent=allGuests.length;
+  document.getElementById('statAttending').textContent=att.length;
+  document.getElementById('statDeclined').textContent=dec.length;
+  document.getElementById('statMembers').innerHTML=mem+'<span class="stat-sub"> members</span>';
+  document.getElementById('chipAll').textContent=allGuests.length;
+  document.getElementById('chipReception').textContent=mem;
+}
+
+function setChip(el,filter){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');currentFilter=filter;renderGuests();
+}
+
+function renderGuests(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const attend=document.getElementById('attendFilter').value;
+  const filtered=allGuests.filter(g=>{
+    const ms=!search||(g.name||'').toLowerCase().includes(search);
+    const ma=attend==='all'||g.attending===attend;
+    return ms&&ma;
+  });
+  document.getElementById('showingLabel').textContent=`SHOWING ${filtered.length} OF ${allGuests.length}`;
+  const list=document.getElementById('guestList');
+  if(!filtered.length){list.innerHTML='<div class="empty-state">No guests found.</div>';return;}
+  list.innerHTML=filtered.map(g=>{
+    const badge=g.attending==='yes'?'<span class="badge yes">ATTENDING</span>':'<span class="badge no">NOT ATTENDING</span>';
+    const time=g.ts?new Date(g.ts).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    const mem=g.attending==='yes'?parseInt(g.members)||1:0;
+    const tag=g.attending==='yes'?`<div class="event-tags"><span class="event-tag">RECEPTION × ${mem}</span></div>`:'';
+    const msg=g.msg?`<div class="guest-msg-text">"${esc(g.msg)}"</div>`:'';
+    return `<div class="guest-card"><div class="guest-header"><div class="guest-name-text">${esc(g.name||'—')}</div>${badge}</div><div class="guest-meta">Members: <strong>${mem}</strong></div>${tag}<div class="reply-time">Replied ${time}</div>${msg}</div>`;
+  }).join('');
+}
+
+function updateInviteLink(){
+  const name=document.getElementById('guestNameInput').value.trim();
+  document.getElementById('linkBox').textContent=name?`${BASE_URL}?guest=${encodeURIComponent(name)}`:BASE_URL;
+}
+function copyLink(){
+  navigator.clipboard.writeText(document.getElementById('linkBox').textContent).then(()=>{
+    const b=event.target;b.textContent='COPIED!';setTimeout(()=>b.textContent='COPY LINK',2000);
+  });
+}
+function shareWA(){
+  const name=document.getElementById('guestNameInput').value.trim();
+  const url=document.getElementById('linkBox').textContent;
+  const msg=name?`Assalamu Alaikum ${name},\n\nYou are warmly invited to the wedding of Yasah & Rifa! 🤍\n\nOpen your personalised invitation:\n${url}`:`Assalamu Alaikum,\n\nYou are warmly invited to the wedding of Yasah & Rifa! 🤍\n\n${url}`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function exportCSV(){
+  const h=['Name','Attending','Members','Message','Timestamp'];
+  const r=allGuests.map(g=>[g.name||'',g.attending||'',g.members||'',g.msg||'',g.ts?new Date(g.ts).toLocaleString('en-GB'):''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent([h.join(','),...r].join('\n'));a.download='yasah-rifa-rsvp.csv';a.click();
+}
+function esc(s){return String(s||'').replace(/[<>"'&]/g,c=>({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[c]));}
+</script>
+</body>
+</html>
